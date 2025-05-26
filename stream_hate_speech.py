@@ -5,10 +5,10 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-# Load tokenizer dari file feature-extraction.pkl (sebenarnya ini adalah tokenizer Keras)
+# Load tokenizer dari file tokenizer.pkl
 @st.cache(allow_output_mutation=True)
 def load_tokenizer():
-    with open('model/feature-extraction.pkl', 'rb') as f:
+    with open('model/tokenizer.pkl', 'rb') as f:
         tokenizer = pickle.load(f)
     return tokenizer
 
@@ -24,7 +24,7 @@ def load_models():
 tokenizer = load_tokenizer()
 model_lstm, model_cnn, model_bilstm = load_models()
 
-# Fungsi preprocessing: konversi teks ke input untuk model (berbasis tokenisasi + padding)
+# Fungsi preprocessing: konversi teks ke input untuk model (tokenisasi + padding)
 def preprocess(text, tokenizer, max_len=100):
     seq = tokenizer.texts_to_sequences([text])
     padded = pad_sequences(seq, maxlen=max_len, padding='post', truncating='post')
@@ -43,7 +43,7 @@ if st.button("Klasifikasikan"):
         pred_cnn = model_cnn.predict(x)[0][0]
         pred_bilstm = model_bilstm.predict(x)[0][0]
 
-        # Hard voting (0 atau 1), soft voting (rata-rata probabilitas)
+        # Hard voting dan soft voting
         hard_preds = [int(pred >= 0.5) for pred in [pred_lstm, pred_cnn, pred_bilstm]]
         soft_vote = np.mean([pred_lstm, pred_cnn, pred_bilstm])
         hard_vote = round(np.mean(hard_preds))
