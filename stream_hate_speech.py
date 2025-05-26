@@ -31,7 +31,7 @@ def preprocess(text, tokenizer, max_len=100):
 
 # UI
 st.title("Deteksi Ujaran Kebencian Bahasa Banjar - Multi Model")
-text = st.text_area("Masukkan Kalimat:", "Contoh kalimat di sini...")
+text = st.text_area("Masukkan Kalimat:", "Tambahkan teks di sini")
 
 if st.button("Klasifikasikan"):
     if text.strip():
