@@ -24,40 +24,49 @@ def load_models():
 tokenizer = load_tokenizer()
 model_lstm, model_cnn, model_bilstm = load_models()
 
-# Fungsi preprocessing: konversi teks ke input untuk model (tokenisasi + padding)
+# Fungsi preprocessing
 def preprocess(text, tokenizer, max_len=100):
     seq = tokenizer.texts_to_sequences([text])
     padded = pad_sequences(seq, maxlen=max_len, padding='post', truncating='post')
     return padded
 
-# Streamlit UI
-st.title("Deteksi Ujaran Kebencian Bahasa Banjar - Multi Model")
+# Label hasil klasifikasi
+labels = {0: "Bukan Ujaran Kebencian", 1: "Ujaran Kebencian"}
+
+# Sidebar untuk memilih model
+st.sidebar.title("Pilih Model Klasifikasi")
+model_option = st.sidebar.radio(
+    "Model yang digunakan:",
+    ("LSTM", "CNN", "BiLSTM", "Ensemble Voting")
+)
+
+# UI utama
+st.title("Deteksi Ujaran Kebencian Bahasa Banjar")
 text = st.text_area("Masukkan Kalimat:")
 
 if st.button("Klasifikasikan"):
     if text.strip():
         x = preprocess(text, tokenizer)
 
-        # Prediksi dari masing-masing model
         pred_lstm = model_lstm.predict(x)[0][0]
         pred_cnn = model_cnn.predict(x)[0][0]
         pred_bilstm = model_bilstm.predict(x)[0][0]
 
-        # Hard voting dan soft voting
-        hard_preds = [int(pred >= 0.5) for pred in [pred_lstm, pred_cnn, pred_bilstm]]
-        soft_vote = np.mean([pred_lstm, pred_cnn, pred_bilstm])
-        hard_vote = round(np.mean(hard_preds))
+        if model_option == "LSTM":
+            hasil = int(pred_lstm >= 0.5)
+            st.success(f"Hasil Deteksi (LSTM): {labels[hasil]}")
 
-        labels = {0: "Bukan Ujaran Kebencian", 1: "Ujaran Kebencian"}
+        elif model_option == "CNN":
+            hasil = int(pred_cnn >= 0.5)
+            st.success(f"Hasil Deteksi (CNN): {labels[hasil]}")
 
-        # Tampilkan hasil
-        st.subheader("Hasil Prediksi per Model")
-        st.write(f"LSTM: {labels[hard_preds[0]]} ({pred_lstm:.2f})")
-        st.write(f"CNN: {labels[hard_preds[1]]} ({pred_cnn:.2f})")
-        st.write(f"BiLSTM: {labels[hard_preds[2]]} ({pred_bilstm:.2f})")
+        elif model_option == "BiLSTM":
+            hasil = int(pred_bilstm >= 0.5)
+            st.success(f"Hasil Deteksi (BiLSTM): {labels[hasil]}")
 
-        st.subheader("Ensemble Voting")
-        st.info(f"Soft Voting: {labels[int(soft_vote >= 0.5)]} (avg prob: {soft_vote:.2f})")
-        st.warning(f"Hard Voting: {labels[hard_vote]} (mayoritas label)")
+        elif model_option == "Ensemble Voting":
+            hard_preds = [int(pred >= 0.5) for pred in [pred_lstm, pred_cnn, pred_bilstm]]
+            hard_vote = round(np.mean(hard_preds))
+            st.success(f"Hasil Deteksi (Ensemble Hard Voting): {labels[hard_vote]}")
     else:
         st.warning("Masukkan teks terlebih dahulu.")
