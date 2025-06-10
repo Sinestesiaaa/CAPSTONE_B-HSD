@@ -23,7 +23,9 @@ Dataset yang digunakan dalam proyek ini dapat diakses melalui tautan [berikut](h
 Aplikasi deteksi ujaran kebencian yang telah dikembangkan dapat dicoba melalui tautan [berikut](https://capstone-hate-speech-detection.streamlit.app).
 
 ![pic1](https://github.com/user-attachments/assets/6b5ab579-e55a-4421-99b6-cc67bb75b6e7)
+
 ![pic2](https://github.com/user-attachments/assets/faeccd7a-9b38-473d-8ae7-ab92b57e8efa)
+
 ![pic3](https://github.com/user-attachments/assets/79ae988d-87e1-4dbe-a9c4-4a6a945ccd37)
 
 ### Presentasi  
